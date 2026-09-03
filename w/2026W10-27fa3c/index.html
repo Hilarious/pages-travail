@@ -2,6 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <title>La chasse au bonbon</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Karla:wght@400;500;700&display=swap">
 <style>
   :root{
@@ -95,6 +96,17 @@
          border:1px solid var(--bord);border-radius:9px;padding:10px 13px;line-height:1.6}
   .repli code{user-select:all;word-break:break-all;color:var(--texte);font-size:11.5px}
 
+  .pied{display:grid;grid-template-columns:1fr;gap:26px;align-items:start}
+  @media(min-width:660px){.pied{grid-template-columns:1fr auto;gap:44px}}
+  .qr-bloc{text-align:center}
+  .qr-cadre{background:#fff;border-radius:12px;padding:12px;display:inline-block;line-height:0}
+  .qr-cadre svg{display:block;width:150px;height:150px}
+  .qr-bloc .qr-l{display:block;margin-top:11px;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+                 color:var(--violet);font-weight:700}
+  .qr-bloc .qr-s{display:block;margin-top:4px;font-size:12.5px;color:var(--doux);max-width:170px}
+  .qr-bloc .qr-repli{font-size:11.5px;color:var(--doux);word-break:break-all;max-width:200px;
+                     display:inline-block;user-select:all}
+
   footer{margin-top:64px;padding-top:28px;border-top:1px solid var(--bord);color:var(--doux);font-size:14px}
   footer h2{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--texte);margin:0 0 10px}
   footer p{margin:0 0 10px;max-width:62ch}
@@ -146,11 +158,20 @@
   </div>
 
   <footer>
+    <div class="pied">
+    <div>
     <h2>Comment nous répondre</h2>
     <p>Faites circuler ce lien en interne, puis envoyez-nous <strong>un retour unique et consolidé</strong> par mail. Un seul canal nous évite les versions contradictoires et vous évite les allers-retours.</p>
     <p>Le lien ne change pas. Chaque mise à jour se lit à la même adresse.</p>
     <p>Les textes visibles dans les écrans sont provisoires. Leur version de travail, en français et en néerlandais, se suit sur <a href="https://claude.ai/code/artifact/d1d0194b-f37c-4c07-a593-6d21964066b0" target="_blank" rel="noopener">une page dédiée</a>.</p>
-    <p class="mentions">Hilarious pour Proximus &middot; Wave 2026W10 &middot; Fichier source 856_October_26_SpookyFun. Les textes, chiffres et lots affichés sont provisoires et ne valent pas engagement.</p>
+    <p class="mentions">Hilarious pour Proximus &middot; Wave 2026W10. Les textes, chiffres et lots affichés sont provisoires et ne valent pas engagement.</p>
+    </div>
+    <div class="qr-bloc">
+      <div class="qr-cadre" id="qr"></div>
+      <span class="qr-l">Sur votre téléphone</span>
+      <span class="qr-s">Scannez pour ouvrir cette page là où le jeu se joue.</span>
+    </div>
+    </div>
   </footer>
 </div>
 
@@ -234,6 +255,28 @@
       } catch(e) {}
     });
   });
+
+  // Le QR encode l'adresse courante : il reste juste ou que la page soit servie.
+  (function(){
+    var cible = document.getElementById('qr');
+    if (!cible) return;
+    var adresse = window.location.href.split('#')[0];
+    try {
+      if (typeof qrcode !== 'function') throw new Error('bibliotheque absente');
+      var q = qrcode(0, 'M');
+      q.addData(adresse);
+      q.make();
+      cible.innerHTML = q.createSvgTag({cellSize: 4, margin: 1, scalable: true});
+    } catch (e) {
+      // sans QR, on donne au moins l'adresse a recopier
+      cible.className = '';
+      cible.innerHTML = '';
+      var s = document.createElement('span');
+      s.className = 'qr-repli';
+      s.textContent = adresse;
+      cible.appendChild(s);
+    }
+  })();
 
   rendre();
 </script>
